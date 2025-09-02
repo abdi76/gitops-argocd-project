@@ -1,0 +1,66 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: k8s-cicd-app-development
+
+resources:
+- ../../base
+
+namespace: k8s-cicd-dev
+
+namePrefix: dev-
+
+commonLabels:
+  environment: development
+  tier: dev
+
+images:
+- name: k8s-cicd-app
+  newTag: dev-latest
+
+replicas:
+- name: k8s-cicd-app
+  count: 1
+
+patches:
+- target:
+    kind: Namespace
+    name: k8s-cicd-base
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: k8s-cicd-dev
+    - op: add
+      path: /metadata/labels/environment
+      value: development
+
+- target:
+    kind: Deployment
+    name: k8s-cicd-app
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/value
+      value: development
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: DEBUG
+        value: "true"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: "32Mi"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: "64Mi"
+
+- target:
+    kind: Service
+    name: k8s-cicd-service
+  patch: |-
+    - op: replace
+      path: /spec/type
+      value: NodePort
+    - op: add
+      path: /spec/ports/0/nodePort
+      value: 30001

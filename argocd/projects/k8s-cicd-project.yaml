@@ -1,0 +1,62 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: k8s-cicd-project
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: k8s-cicd-project
+    app.kubernetes.io/part-of: argocd
+spec:
+  description: K8s CI/CD Application Project
+  
+  sourceRepos:
+  - 'https://github.com/your-username/gitops-argocd-project'
+  - 'https://github.com/your-username/k8s-cicd-app'
+  
+  destinations:
+  - namespace: k8s-cicd-dev
+    server: https://kubernetes.default.svc
+  - namespace: k8s-cicd-staging
+    server: https://kubernetes.default.svc
+  - namespace: k8s-cicd-prod
+    server: https://kubernetes.default.svc
+  
+  clusterResourceWhitelist:
+  - group: ''
+    kind: Namespace
+  - group: rbac.authorization.k8s.io
+    kind: ClusterRole
+  - group: rbac.authorization.k8s.io
+    kind: ClusterRoleBinding
+  
+  namespaceResourceWhitelist:
+  - group: ''
+    kind: ConfigMap
+  - group: ''
+    kind: Service
+  - group: ''
+    kind: Secret
+  - group: apps
+    kind: Deployment
+  - group: apps
+    kind: ReplicaSet
+  - group: networking.k8s.io
+    kind: Ingress
+  - group: autoscaling
+    kind: HorizontalPodAutoscaler
+  
+  roles:
+  - name: developer
+    description: Developer role with read-only access
+    policies:
+    - p, proj:k8s-cicd-project:developer, applications, get, k8s-cicd-project/*, allow
+    - p, proj:k8s-cicd-project:developer, applications, sync, k8s-cicd-project/k8s-cicd-dev, allow
+    groups:
+    - your-username:developers
+  
+  - name: devops
+    description: DevOps role with full access
+    policies:
+    - p, proj:k8s-cicd-project:devops, applications, *, k8s-cicd-project/*, allow
+    groups:
+    - your-username:devops

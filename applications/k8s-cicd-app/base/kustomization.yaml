@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: k8s-cicd-app-base
+
+resources:
+- namespace.yaml
+- deployment.yaml
+- service.yaml
+
+commonLabels:
+  app: k8s-cicd-app
+  managed-by: argocd
+
+images:
+- name: k8s-cicd-app
+  newName: your-dockerhub-username/k8s-cicd-app
+  newTag: latest

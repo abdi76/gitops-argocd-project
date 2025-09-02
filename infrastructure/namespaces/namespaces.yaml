@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-cicd-dev
+  labels:
+    name: k8s-cicd-dev
+    environment: development
+    managed-by: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-cicd-staging
+  labels:
+    name: k8s-cicd-staging
+    environment: staging
+    managed-by: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: k8s-cicd-prod
+  labels:
+    name: k8s-cicd-prod
+    environment: production
+    managed-by: argocd

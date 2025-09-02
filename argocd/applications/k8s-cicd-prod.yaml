@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-cicd-prod
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: k8s-cicd-prod
+    environment: production
+spec:
+  project: k8s-cicd-project
+  source:
+    repoURL: https://github.com/your-username/gitops-argocd-project
+    targetRevision: HEAD
+    path: applications/k8s-cicd-app/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: k8s-cicd-prod
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 2
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m
+  revisionHistoryLimit: 20
+  ignoreDifferences:
+  - group: apps
+    kind: Deployment
+    jsonPointers:
+    - /spec/replicas

@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: k8s-cicd-app-monitor
+  labels:
+    app: k8s-cicd-app
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: k8s-cicd-app
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 15s
+    scrapeTimeout: 10s
+  namespaceSelector:
+    matchNames:
+    - k8s-cicd-dev
+    - k8s-cicd-staging
+    - k8s-cicd-prod

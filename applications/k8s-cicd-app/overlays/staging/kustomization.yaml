@@ -1,0 +1,57 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: k8s-cicd-app-staging
+
+resources:
+- ../../base
+
+namespace: k8s-cicd-staging
+
+namePrefix: staging-
+
+commonLabels:
+  environment: staging
+  tier: staging
+
+images:
+- name: k8s-cicd-app
+  newTag: staging-latest
+
+replicas:
+- name: k8s-cicd-app
+  count: 2
+
+patches:
+- target:
+    kind: Namespace
+    name: k8s-cicd-base
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: k8s-cicd-staging
+    - op: add
+      path: /metadata/labels/environment
+      value: staging
+
+- target:
+    kind: Deployment
+    name: k8s-cicd-app
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/value
+      value: staging
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: LOG_LEVEL
+        value: "info"
+
+- target:
+    kind: Service
+    name: k8s-cicd-service
+  patch: |-
+    - op: replace
+      path: /spec/type
+      value: LoadBalancer

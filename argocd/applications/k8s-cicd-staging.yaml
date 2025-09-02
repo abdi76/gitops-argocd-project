@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-cicd-staging
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: k8s-cicd-staging
+    environment: staging
+spec:
+  project: k8s-cicd-project
+  source:
+    repoURL: https://github.com/your-username/gitops-argocd-project
+    targetRevision: HEAD
+    path: applications/k8s-cicd-app/overlays/staging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: k8s-cicd-staging
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 2m
+  revisionHistoryLimit: 10

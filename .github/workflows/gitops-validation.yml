@@ -1,0 +1,72 @@
+name: GitOps Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-manifests:
+    name: Validate Kubernetes Manifests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Kustomize
+      uses: imranismail/setup-kustomize@v2
+    
+    - name: Setup kubeval
+      run: |
+        wget https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
+        tar xf kubeval-linux-amd64.tar.gz
+        sudo cp kubeval /usr/local/bin
+    
+    - name: Validate Development Environment
+      run: |
+        echo "Validating development environment manifests..."
+        kustomize build applications/k8s-cicd-app/overlays/development | kubeval
+    
+    - name: Validate Staging Environment
+      run: |
+        echo "Validating staging environment manifests..."
+        kustomize build applications/k8s-cicd-app/overlays/staging | kubeval
+    
+    - name: Validate Production Environment
+      run: |
+        echo "Validating production environment manifests..."
+        kustomize build applications/k8s-cicd-app/overlays/production | kubeval
+    
+    - name: Check ArgoCD Applications
+      run: |
+        echo "Validating ArgoCD application manifests..."
+        kubeval argocd/applications/*.yaml
+        kubeval argocd/projects/*.yaml
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Kustomize
+      uses: imranismail/setup-kustomize@v2
+    
+    - name: Run kube-score
+      run: |
+        wget https://github.com/zegl/kube-score/releases/download/v1.16.1/kube-score_1.16.1_linux_amd64.tar.gz
+        tar xzf kube-score_1.16.1_linux_amd64.tar.gz
+        sudo mv kube-score /usr/local/bin/
+        
+        echo "Scanning development manifests..."
+        kustomize build applications/k8s-cicd-app/overlays/development | kube-score score -
+        
+        echo "Scanning staging manifests..."
+        kustomize build applications/k8s-cicd-app/overlays/staging | kube-score score -
+        
+        echo "Scanning production manifests..."
+        kustomize build applications/k8s-cicd-app/overlays/production | kube-score score -

@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8s-cicd-app-of-apps
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: k8s-cicd-app-of-apps
+spec:
+  project: k8s-cicd-project
+  source:
+    repoURL: https://github.com/your-username/gitops-argocd-project
+    targetRevision: HEAD
+    path: argocd/applications
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

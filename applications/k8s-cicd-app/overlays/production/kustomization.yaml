@@ -1,0 +1,63 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: k8s-cicd-app-production
+
+resources:
+- ../../base
+- hpa.yaml
+- ingress.yaml
+
+namespace: k8s-cicd-prod
+
+namePrefix: prod-
+
+commonLabels:
+  environment: production
+  tier: production
+
+images:
+- name: k8s-cicd-app
+  newTag: v1.0.0
+
+replicas:
+- name: k8s-cicd-app
+  count: 3
+
+patches:
+- target:
+    kind: Namespace
+    name: k8s-cicd-base
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: k8s-cicd-prod
+    - op: add
+      path: /metadata/labels/environment
+      value: production
+
+- target:
+    kind: Deployment
+    name: k8s-cicd-app
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/env/0/value
+      value: production
+    - op: add
+      path: /spec/template/spec/containers/0/env/-
+      value:
+        name: LOG_LEVEL
+        value: "warn"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: "128Mi"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: "100m"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: "256Mi"
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: "200m"
