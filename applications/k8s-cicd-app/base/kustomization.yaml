@@ -10,8 +10,8 @@ resources:
 - service.yaml
 - pdb.yaml
 
-commonLabels:
-  app: k8s-cicd-app
-  managed-by: argocd
-
-
+labels:
+- includeSelectors: true
+  pairs:
+    app: k8s-cicd-app
+    managed-by: argocd
