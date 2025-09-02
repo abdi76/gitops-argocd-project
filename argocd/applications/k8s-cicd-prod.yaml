@@ -9,7 +9,7 @@ metadata:
 spec:
   project: k8s-cicd-project
   source:
-    repoURL: https://github.com/your-username/gitops-argocd-project
+    repoURL: https://github.com/abdi76/gitops-argocd-project
     targetRevision: HEAD
     path: applications/k8s-cicd-app/overlays/production
   destination:
