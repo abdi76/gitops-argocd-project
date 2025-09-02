@@ -56,6 +56,12 @@ patches:
   target:
     kind: Deployment
     name: k8s-cicd-app
+- patch: |-
+    - op: remove
+      path: /spec/replicas
+  target:
+    kind: Deployment
+    name: k8s-cicd-app
 labels:
 - includeSelectors: true
   pairs:
