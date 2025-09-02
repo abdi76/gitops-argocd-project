@@ -1,25 +1,24 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: k8s-cicd-app-ingress
+  name: k8s-cicd-app
+  namespace: k8s-cicd-prod
   annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
-  tls:
-  - hosts:
-    - k8s-cicd-app.example.com
-    secretName: k8s-cicd-app-tls
+  ingressClassName: nginx
   rules:
-  - host: k8s-cicd-app.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: k8s-cicd-service
-            port:
-              number: 80
+    - host: cicd-app.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: k8s-cicd-app
+                port:
+                  number: 80
+  tls:
+    - hosts:
+        - cicd-app.example.com
+      secretName: cicd-app-tls

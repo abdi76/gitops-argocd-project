@@ -13,34 +13,28 @@ namespace: k8s-cicd-prod
 
 namePrefix: prod-
 
-commonLabels:
-  environment: production
-  tier: production
 
 images:
 - name: k8s-cicd-app
   newTag: v1.0.0
 
 replicas:
-- name: k8s-cicd-app
-  count: 3
+- count: 3
+  name: k8s-cicd-app
+
 
 patches:
-- target:
-    kind: Namespace
-    name: k8s-cicd-base
-  patch: |-
+- patch: |-
     - op: replace
       path: /metadata/name
       value: k8s-cicd-prod
     - op: add
       path: /metadata/labels/environment
       value: production
-
-- target:
-    kind: Deployment
-    name: k8s-cicd-app
-  patch: |-
+  target:
+    kind: Namespace
+    name: k8s-cicd-base
+- patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/0/value
       value: production
@@ -61,3 +55,11 @@ patches:
     - op: replace
       path: /spec/template/spec/containers/0/resources/limits/cpu
       value: "200m"
+  target:
+    kind: Deployment
+    name: k8s-cicd-app
+labels:
+- includeSelectors: true
+  pairs:
+    environment: production
+    tier: production
