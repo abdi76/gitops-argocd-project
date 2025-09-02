@@ -1,3 +1,4 @@
+
 # GitOps with ArgoCD
 
 [![GitOps Validation](https://github.com/your-username/gitops-argocd-project/actions/workflows/gitops-validation.yml/badge.svg)](https://github.com/your-username/gitops-argocd-project/actions/workflows/gitops-validation.yml)
