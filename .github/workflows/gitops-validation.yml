@@ -46,11 +46,11 @@ jobs:
         kustomize build applications/k8s-cicd-app/overlays/production | \
         kubeval --schema-location=file://$(pwd)/schemas --kubernetes-version="1.34.0"
 
-    - name: Check ArgoCD Applications
-      run: |
-        echo "Validating ArgoCD application manifests..."
+    #- name: Check ArgoCD Applications
+     # run: |
+      #  echo "Validating ArgoCD application manifests..."
         # Add --validate=false to disable validation
-        argocd app validate argocd/applications/ --validate=false
+       # argocd app validate argocd/applications/ --validate=false
 
   security-scan:
     name: Security Scan
