@@ -10,8 +10,8 @@ spec:
   description: K8s CI/CD Application Project
   
   sourceRepos:
-  - 'https://github.com/your-username/gitops-argocd-project'
-  - 'https://github.com/your-username/k8s-cicd-app'
+  - 'https://github.com/abdi76/gitops-argocd-project'
+  - 'https://github.com/abdi76/k8s-cicd-app'
   
   destinations:
   - namespace: k8s-cicd-dev
@@ -52,11 +52,11 @@ spec:
     - p, proj:k8s-cicd-project:developer, applications, get, k8s-cicd-project/*, allow
     - p, proj:k8s-cicd-project:developer, applications, sync, k8s-cicd-project/k8s-cicd-dev, allow
     groups:
-    - your-username:developers
+    - abdi76:developers
   
   - name: devops
     description: DevOps role with full access
     policies:
     - p, proj:k8s-cicd-project:devops, applications, *, k8s-cicd-project/*, allow
     groups:
-    - your-username:devops
+    - abdi76:devops
