@@ -35,9 +35,9 @@ data:
     g, your-github-org:devops, role:admin
   repositories: |
     - type: git
-      url: https://github.com/your-username/gitops-argocd-project
+      url: https://github.com/abdi76/gitops-argocd-project
     - type: git
-      url: https://github.com/your-username/k8s-cicd-app
+      url: https://github.com/abdi76/k8s-cicd-app
 ---
 apiVersion: v1
 kind: Service
