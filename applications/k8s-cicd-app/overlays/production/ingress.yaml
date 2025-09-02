@@ -15,7 +15,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: k8s-cicd-app
+                name: prod-k8s-cicd-service
                 port:
                   number: 80
   tls:

@@ -18,9 +18,7 @@ images:
 - name: k8s-cicd-app
   newTag: v1.0.0
 
-replicas:
-- count: 3
-  name: k8s-cicd-app
+
 
 
 patches:
