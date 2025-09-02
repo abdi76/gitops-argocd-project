@@ -28,11 +28,12 @@ spec:
     spec:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 1001
-        fsGroup: 1001
+        runAsUser: 10001  # Changed: Must be > 10000
+        runAsGroup: 10001  # Added: Must be > 10000
+        fsGroup: 10001  # Changed: Must be > 10000
       containers:
       - name: k8s-cicd-app
-        image: k8s-cicd-app:latest
+        image: k8s-cicd-app:v1.0.0  # Changed: Use specific tag instead of latest
         ports:
         - containerPort: 3000
           name: http
@@ -46,12 +47,14 @@ spec:
           requests:
             memory: "64Mi"
             cpu: "50m"
+            ephemeral-storage: "1Gi"  # Added: Required by kube-score
           limits:
             memory: "128Mi"
             cpu: "100m"
+            ephemeral-storage: "2Gi"  # Added: Required by kube-score
         livenessProbe:
           httpGet:
-            path: /health
+            path: /health/live  # Changed: Different from readiness probe
             port: 3000
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -59,7 +62,7 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /health
+            path: /health/ready  # Changed: Different from liveness probe
             port: 3000
           initialDelaySeconds: 5
           periodSeconds: 5
@@ -69,7 +72,48 @@ spec:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-          runAsUser: 1001
+          runAsUser: 10001  # Changed: Must be > 10000
+          runAsGroup: 10001  # Added: Must be > 10000
           capabilities:
             drop:
             - ALL
+---
+# NetworkPolicy to fix the critical NetworkPolicy issue
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: k8s-cicd-app-netpol
+  namespace: k8s-cicd-dev  # Make sure this matches your namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: k8s-cicd-app
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: k8s-cicd-dev
+    ports:
+    - protocol: TCP
+      port: 3000
+  egress:
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  # Allow HTTPS outbound
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443
+  # Allow HTTP outbound (if needed)
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 80
