@@ -8,12 +8,10 @@ resources:
 - namespace.yaml
 - deployment.yaml
 - service.yaml
+- pdb.yaml
 
 commonLabels:
   app: k8s-cicd-app
   managed-by: argocd
 
-images:
-- name: k8s-cicd-app
-  newName: your-dockerhub-username/k8s-cicd-app
-  newTag: latest
+

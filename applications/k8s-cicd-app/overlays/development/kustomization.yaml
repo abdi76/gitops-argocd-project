@@ -11,34 +11,28 @@ namespace: k8s-cicd-dev
 
 namePrefix: dev-
 
-commonLabels:
-  environment: development
-  tier: dev
 
 images:
 - name: k8s-cicd-app
   newTag: dev-v1.0.0
 
 replicas:
-- name: k8s-cicd-app
-  count: 2
+- count: 2
+  name: k8s-cicd-app
+
 
 patches:
-- target:
-    kind: Namespace
-    name: k8s-cicd-base
-  patch: |-
+- patch: |-
     - op: replace
       path: /metadata/name
       value: k8s-cicd-dev
     - op: add
       path: /metadata/labels/environment
       value: development
-
-- target:
-    kind: Deployment
-    name: k8s-cicd-app
-  patch: |-
+  target:
+    kind: Namespace
+    name: k8s-cicd-base
+- patch: |-
     - op: replace
       path: /spec/template/spec/containers/0/env/0/value
       value: development
@@ -53,4 +47,11 @@ patches:
     - op: replace
       path: /spec/template/spec/containers/0/resources/limits/memory
       value: "64Mi"
-
+  target:
+    kind: Deployment
+    name: k8s-cicd-app
+labels:
+- includeSelectors: true
+  pairs:
+    environment: development
+    tier: dev

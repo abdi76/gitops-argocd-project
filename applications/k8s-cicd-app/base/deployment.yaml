@@ -26,6 +26,16 @@ spec:
         prometheus.io/path: "/metrics"
         argocd.argoproj.io/tracking-id: k8s-cicd-app
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - k8s-cicd-app
+            topologyKey: "kubernetes.io/hostname"
       securityContext:
         runAsNonRoot: true
         runAsUser: 10001  # Changed: Must be > 10000
