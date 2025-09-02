@@ -65,8 +65,8 @@ jobs:
     
     - name: Run kube-score
       run: |
-        wget https://github.com/zegl/kube-score/releases/download/v1.16.1/kube-score_1.16.1_linux_amd64.tar.gz
-        tar xzf kube-score_1.16.1_linux_amd64.tar.gz
+        wget https://github.com/zegl/kube-score/releases/download/v1.20.0/kube-score_1.20.0_linux_amd64.tar.gz
+        tar xzf kube-score_1.20.0_linux_amd64.tar.gz
         sudo mv kube-score /usr/local/bin/
         
         echo "Scanning development manifests..."
